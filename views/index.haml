@@ -12,17 +12,25 @@
       %h1 Trippy
       #container
         %form{:method => "post", :action => '/articles'}
+          %h2{:class => "label"} Commute?
+          %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
+          %select{:style => "display:none;", :id => "tasks"}
+            %option{:value => "bathroom"} Go to the bathroom
+            %option{:value => "meat"} Thaw one pound of meat
+          %br/
           %h2{:class => "label"} Twitter List:
           %input{:class => "input_field" ,"type" => "text", "name" => "twitter"}
           %br/
           %h2{:class => "label"} Current Location:
-          %input{:class => "input_field" ,"type" => "text", "name" => "origin"}
+          %input{:class => "input_field" ,"type" => "text", "name" => "origin", :id => "location_field"}
           %br/
           %h2{:class => "label"} Commute Destination:
-          %input{:class => "input_field" ,"type" => "text", "name" => "destination"}
+          %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
           %br/
           %input{:type => "submit"}
     - if @articles
       %ul
         - @articles.each do |article|
           %li #{article}
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", :type => "text/javascript"}
+    %script{:src => "trippy.js", :type => "text/javascript"}
