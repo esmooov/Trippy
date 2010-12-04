@@ -39,7 +39,7 @@ def get_twitter_links
   urls.each do |url|
     begin
       url = follow_redirects(url)
-      rescue Curl::Err::ConnectionFailedError
+      rescue Curl::Err
         url = nil
     end
   end
@@ -101,4 +101,19 @@ def select_articles(origin,destination)
   LOG.info "total articles is #{text.size}"
   
   text
+end
+
+class ArticleJob 
+  def initialize(origin,destination,hash)
+    @origin = origin
+    @destination = destination
+    @hash = hash
+  end
+  
+  def perform
+    articles = select_articles(@origin,@destination)
+    f = File.new("#{@hash}.json","w+").do |f|
+      f.write articles.to_s
+    end
+  end
 end
