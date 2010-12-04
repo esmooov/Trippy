@@ -7,6 +7,8 @@ require 'sanitize'
 require 'twitter-text'
 require 'crack'
 require 'curb'
+require 'typhoeus'
+
 CONFIG = YAML::load(File.open(File.expand_path("../../config/config.yml", __FILE__)))
 
 def read_time(words)
@@ -24,6 +26,45 @@ def parse_article(url)
   clean_text = Sanitize.clean(readability_html)
   wc = clean_text.split(/ /).size
   {:wc => wc, :title => title, :clean_text => readability_html}
+end
+
+def hydra_fetch
+  urls = []
+  hydra = Typhoeus::Hydra.new
+  LOG.info "Cracking list"
+  list = Crack::JSON.parse(RestClient.get("http://api.twitter.com/1/harrisj/lists/news-hackers/statuses.json?per_page=50"))
+  LOG.info list
+  list.each do |tweet|
+    text = tweet['text']
+    tweet_urls = Twitter::Extractor.extract_urls(text)
+    tweet_urls.flatten
+    urls << tweet_urls
+  end
+  urls = urls.flatten.uniq
+  LOG.info urls
+  urls.collect!{|url| {:location => url} }
+  urls.each do |url|
+    url[:request] = Typhoeus::Request.new(url[:location] , :follow_location => true, :timeout => 2000, :cache_timeout => 200, :user_agent => "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7")
+    url[:request].on_complete do |response|
+      url[:response] = response
+      begin
+        url[:title] = Nokogiri::HTML(response.body).search('title').text
+      rescue
+        url[:title] = ""
+      end
+      begin
+        readability_html = Readability::Document.new(response.body).content
+        url[:clean_text] = Sanitize.clean(readability_html)
+      rescue
+        url[:clean_text] = ""
+      end
+      url[:wc] = url[:clean_text].split(/ /).size
+    end
+    hydra.queue url[:request]
+    LOG.info url[:location]
+  end
+  hydra.run
+  urls
 end
 
 def get_twitter_links
@@ -79,8 +120,8 @@ def select_articles(origin,destination)
   LOG.info(myjourney)
   
   text = []
-  cur_wc = 0
-  
+  cur_wc = 0 
+
   urls = get_twitter_links
   urls.each do |url|
   article = parse_article(url)
