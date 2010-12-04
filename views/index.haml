@@ -20,7 +20,7 @@
             %option{:value => "bathroom"} Go to the bathroom
             %option{:value => "meat"} Thaw one pound of meat
           %br/
-          %h2{:class => "label"} Twitter List:
+          %h2{:class => "label"} Twitter Account:
           %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
           %br/
           %h2{:class => "label"} Current Location:
@@ -30,6 +30,7 @@
           %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
           %br/
           %input{:type => "submit"}
+          %h2.article_status
           
           #articles
           
@@ -37,8 +38,8 @@
           %script{:src => "trippy.js", :type => "text/javascript"}
           
           - if @msg
-            %h2.article_status #{@msg}
             :javascript
               $(function(){
+                $("h2.article_status").append("#{@msg}")
                 Trippy.startJobChecker();
               });

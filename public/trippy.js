@@ -31,7 +31,9 @@ var Trippy = {
 					$("#articles").append("<li>" +
 					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
 						data["articles"]["articles"][i]["text"] + "<\/li>");
-				}				
+				}
+				$("h2.article_status").append("In your " + data["articles"]["journey_length"] + " minute long journey<br />" +
+					"you can read " + data["articles"]["articles"].length + " articles");
 			}
 		});
 		
