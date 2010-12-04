@@ -1,0 +1,23 @@
+!!!
+%html
+  %head
+    %title Trippy
+    %meta{"http-equiv" => "Content-Type", :content => "text/html; charset=utf-8"}
+    %link{"rel" => "stylesheet", "href" => "style.css", "type" => "text/css"}
+    %link{"rel" => "stylesheet", "media" => "screen and (max-width: 480px)"  , "href" => "small.css", "type" => "text/css"}
+    %link{"rel" => "stylesheet", "media" => "screen and (max-width: 1019px) and (min-width: 481px)"  , "href" => "medium.css", "type" => "text/css"}
+    %link{"rel" => "stylesheet", "media" => "screen and (min-width: 1020px)"  , "href" => "large.css", "type" => "text/css"}
+  %body
+    #page
+      %h1 Trippy
+      #container
+        %form
+          %h2{:class => "label"} Twitter List:
+          %input{:class => "input_field" ,"type" => "text", "name" => "twitter"}
+          %br/
+          %h2{:class => "label"} Current Location:
+          %input{:class => "input_field" ,"type" => "text", "name" => "location"}
+          %br/
+          %h2{:class => "label"} Commute Destination:
+          %input{:class => "input_field" ,"type" => "text", "name" => "destination"}
+          %br/

@@ -1,0 +1,15 @@
+#page {
+  width: 480px;
+  height: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  -webkit-box-shadow: 0px 0px 12px #cecece;
+  -moz-box-shadow: 0px 0px 12px #cecece;
+  box-shadow: 0px 0px 12px #cecece;
+  position: relative; }
+
+h2.label {
+  display: block; }
+
+input.input_field {
+  margin-left: 12px; }
