@@ -15,7 +15,7 @@ $(function(){
 
 var Trippy = {
 	startJobChecker : function() {
-		Trippy.checker_endpoint = "/articles_ready/" + '34d1694f24a144325aa70441062b51d2';
+		Trippy.checker_endpoint = "/articles_ready/" + articles_hash;
 		window.job_checker = window.setInterval(Trippy.checkJobStatus,5000);
 	},
 	checkJobStatus : function() {

@@ -120,9 +120,9 @@ def select_articles(origin,destination)
   LOG.info(myjourney)
   articles = []
   cur_wc = 0
-  urls = get_twitter_links
+  urls = hydra_fetch
   urls.each do |url|
-  article = parse_article(url)
+    article = url
     LOG.info "processing #{article[:title]}"
 
     if article[:wc] > CONFIG['wc_threshhold'] && (read_time(article[:wc]) <= ((myjourney / 60) - read_time(cur_wc)))
