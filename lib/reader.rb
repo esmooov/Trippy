@@ -46,6 +46,7 @@ def hydra_fetch(account = "longreads")
         url[:clean_text] = ""
       end
       url[:wc] = url[:clean_text].split(/ /).size
+      url[:readability_html] = readability_html
     end
     hydra.queue url[:request]
     LOG.info url[:location]
@@ -85,7 +86,7 @@ def select_articles(origin,destination,twitter_account)
     if article[:wc] > CONFIG['wc_threshhold'] && (read_time(article[:wc]) <= ((myjourney / 60) - read_time(cur_wc)))
       LOG.info "accepting #{article[:title]} with read time: #{read_time(article[:wc])}"
       cur_wc += article[:wc]
-      articles << {:text => article[:clean_text], :title => article[:title]}
+      articles << {:text => article[:readability_html], :title => article[:title]}
     else
       LOG.info "rejecting #{article[:title]} with read time: #{read_time(article[:wc])}"
     end
