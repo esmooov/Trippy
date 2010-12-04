@@ -28,9 +28,12 @@
           %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
           %br/
           %input{:type => "submit"}
-    - if @articles
-      %ul
-        - @articles.each do |article|
-          %li #{article}
-    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", :type => "text/javascript"}
-    %script{:src => "trippy.js", :type => "text/javascript"}
+          - if @articles
+            %ul
+              - @articles.each do |article|
+                %li #{article}
+          %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", :type => "text/javascript"}
+          %script{:src => "trippy.js", :type => "text/javascript"}
+          
+          - if @msg
+            %h2 #{@msg}

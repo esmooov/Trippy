@@ -74,12 +74,10 @@ def length_of_journey(origin,destination)
   hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
 end
 
-if ARGV.length == 2
-  length_of_journey
-end
-
 def select_articles(origin,destination)
   myjourney = length_of_journey(origin,destination)
+  LOG.info(myjourney)
+  
   text = []
   cur_wc = 0
   
@@ -112,8 +110,8 @@ class ArticleJob
   
   def perform
     articles = select_articles(@origin,@destination)
-    f = File.new("#{@hash}.json","w+").do |f|
-      f.write articles.to_s
+    File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
+      f.write articles.to_json
     end
   end
 end

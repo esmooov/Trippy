@@ -25,10 +25,23 @@ get '/' do
 end
 
 post '/articles' do
-  origin = params[:origin]
-  destination = params[:destination]
+  @origin = params[:origin]
+  @destination = params[:destination]
   @hash = Digest::MD5.hexdigest("#{Time.now.to_i}trippy")
-  @articles = Delayed::Job.enqueue(select_articles(origin, destination, @hash))
+  Delayed::Job.enqueue ArticleJob.new(@origin, @destination, @hash)
+  @msg = "processing"
   
   haml :index
+end
+
+get '/articles_ready/:hash' do
+  content_type :json
+  
+  if File.exists?(File.expand_path("../public/articles/#{@hash}.json",__FILE__))
+    @articles = File.open(File.expand_path("../public/articles/#{@hash}.json",__FILE__)).read
+  else
+    @articles = {:stat => "not_ready"}.to_json
+  end
+  
+  @articles
 end
