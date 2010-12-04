@@ -10,4 +10,34 @@ $(function(){
       $('#destination_field').attr("disabled", "disabled");
     }
   });
+	
 })
+
+var Trippy = {
+	startJobChecker : function() {
+		Trippy.checker_endpoint = "/articles_ready/" + '34d1694f24a144325aa70441062b51d2';
+		window.job_checker = window.setInterval(Trippy.checkJobStatus,5000);
+	},
+	checkJobStatus : function() {
+		$.get(Trippy.checker_endpoint, function(data) {
+			var msg = data["msg"];
+			if (msg === "not_ready") {
+				$("h2.article_status").append(".");
+			} else {
+				$("h2.article_status").empty();
+				var i;
+				for(i = 0; i <= data["articles"]["articles"].length ; i++) {
+					$("#articles").append("<li>" +
+					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
+						data["articles"]["articles"][i]["text"] + "<\/li>");
+				}
+				clearInterval(window.job_checker);
+			}
+		});
+		
+	},
+	stopJobChecker : function() {
+		clearInterval(window.job_checker);
+	}
+	
+}
