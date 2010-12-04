@@ -7,6 +7,8 @@
     %link{"rel" => "stylesheet", "media" => "screen and (max-width: 480px)"  , "href" => "small.css", "type" => "text/css"}
     %link{"rel" => "stylesheet", "media" => "screen and (max-width: 1019px) and (min-width: 481px)"  , "href" => "medium.css", "type" => "text/css"}
     %link{"rel" => "stylesheet", "media" => "screen and (min-width: 1020px)"  , "href" => "large.css", "type" => "text/css"}
+  :javascript
+    var articles_hash = "#{@hash || ''}";
   %body
     #page
       %h1 Trippy
@@ -28,12 +30,15 @@
           %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
           %br/
           %input{:type => "submit"}
-          - if @articles
-            %ul
-              - @articles.each do |article|
-                %li #{article}
+          
+          #articles
+          
           %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js", :type => "text/javascript"}
           %script{:src => "trippy.js", :type => "text/javascript"}
           
           - if @msg
-            %h2 #{@msg}
+            %h2.article_status #{@msg}
+            :javascript
+              $(function(){
+                Trippy.startJobChecker();
+              });

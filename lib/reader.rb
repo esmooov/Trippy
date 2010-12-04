@@ -78,7 +78,7 @@ def select_articles(origin,destination)
   myjourney = length_of_journey(origin,destination)
   LOG.info(myjourney)
   
-  text = []
+  articles = []
   cur_wc = 0
   
   urls = get_twitter_links
@@ -89,16 +89,16 @@ def select_articles(origin,destination)
     if article[:wc] > CONFIG['wc_threshhold'] && (read_time(article[:wc]) <= ((myjourney / 60) - read_time(cur_wc)))
       LOG.info "accepting #{article[:title]} with read time: #{read_time(article[:wc])}"
       cur_wc += article[:wc]
-      text << article[:clean_text]
+      articles << {:text => article[:clean_text], :title => article[:title]}
     else
       LOG.info "rejecting #{article[:title]} with read time: #{read_time(article[:wc])}"
     end
   end
   LOG.info "total travel time is #{myjourney / 60}"
   LOG.info "total read time for this dump is #{read_time(cur_wc)}"
-  LOG.info "total articles is #{text.size}"
+  LOG.info "total articles is #{articles.size}"
   
-  text
+  {:articles => articles, :journey_length => myjourney}
 end
 
 class ArticleJob 
@@ -109,7 +109,8 @@ class ArticleJob
   end
   
   def perform
-    articles = select_articles(@origin,@destination)
+    articles = {:msg => "OK", :articles => select_articles(@origin,@destination)}
+    
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
       f.write articles.to_json
     end

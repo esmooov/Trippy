@@ -36,11 +36,15 @@ end
 
 get '/articles_ready/:hash' do
   content_type :json
+  @hash = params[:hash]
+  
+  LOG.info File.expand_path("../public/articles/#{@hash}.json",__FILE__)
   
   if File.exists?(File.expand_path("../public/articles/#{@hash}.json",__FILE__))
-    @articles = File.open(File.expand_path("../public/articles/#{@hash}.json",__FILE__)).read
+    json = File.open(File.expand_path("../public/articles/#{@hash}.json",__FILE__),"r").read
+    @articles = JSON.parse(json).to_json
   else
-    @articles = {:stat => "not_ready"}.to_json
+    @articles = {:msg => "not_ready", :articles => []}.to_json
   end
   
   @articles
