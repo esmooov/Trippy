@@ -24,14 +24,14 @@ var Trippy = {
 			if (msg === "not_ready") {
 				$("h2.article_status").append(".");
 			} else {
+				clearInterval(window.job_checker);
 				$("h2.article_status").empty();
 				var i;
-				for(i = 0; i <= data["articles"]["articles"].length ; i++) {
+				for(i = 0; i < data["articles"]["articles"].length ; i++) {
 					$("#articles").append("<li>" +
 					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
 						data["articles"]["articles"][i]["text"] + "<\/li>");
-				}
-				clearInterval(window.job_checker);
+				}				
 			}
 		});
 		
