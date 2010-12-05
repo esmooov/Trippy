@@ -122,6 +122,17 @@ def select_articles(origin,destination,twitter_account,activity,geo)
   {:articles => articles, :journey_length => (myjourney / 60)}
 end
 
+def check_job_status
+  jobs = Delayed::Job.all.size
+  error = Delayed::Job.all.first.last_error ? Delayed::Job.all.first.last_error.to_s.gsub(/\\n|\n|\{/,'<br/>') : nil
+  if error
+    Delayed::Job.all.each(&:delete)
+    return error.to_s
+  else
+    return nil
+  end
+end
+
 class ArticleJob 
   def initialize(origin,destination,hash,twitter_account,activity,geo)
     @origin = origin

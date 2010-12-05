@@ -78,6 +78,11 @@ h2.article_status {
   background:#cfc;
 }
 
+h2.sad_article_status {
+  color:#660000 !important;
+  background:#FFEEEE !important;
+}
+
 input[type=checkbox] {
   width:20px !important;
   float:left;
