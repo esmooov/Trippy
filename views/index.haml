@@ -16,7 +16,7 @@
         %form{:method => "post", :action => '/articles'}
           %h2{:class => "label"} Commute?
           %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
-          %select{:style => "display:none;", :id => "tasks"}
+          %select{:style => "display:none;", :id => "tasks", :name => "activities"}
             %option{:value => "bathroom"} Go to the bathroom
             %option{:value => "meat"} Thaw one pound of meat
           %br/
