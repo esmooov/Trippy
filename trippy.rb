@@ -51,7 +51,12 @@ get '/articles_ready/:hash' do
     @articles = JSON.parse(json).to_json
     FileUtils.rm_r(File.expand_path("../public/articles/#{@hash}.json",__FILE__), :force => true)
   else
-    @articles = {:msg => "not_ready", :articles => []}.to_json
+    error = check_job_status
+    if error
+      @articles = {:msg => "error", :error => error, :articles => []}.to_json
+    else
+      @articles = {:msg => "not_ready", :articles => []}.to_json
+    end
   end
   
   @articles

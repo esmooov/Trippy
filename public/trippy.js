@@ -23,6 +23,9 @@ var Trippy = {
 			var msg = data["msg"];
 			if (msg === "not_ready") {
 				$("h2.article_status").append(".");
+			} else if(msg === "error"){
+			  clearInterval(window.job_checker)
+			  $("h2.article_status").empty().addClass("sad_article_status").append("Error! Please try again");
 			} else {
 				clearInterval(window.job_checker);
 				$("h2.article_status").empty();
