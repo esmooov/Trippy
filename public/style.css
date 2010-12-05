@@ -77,3 +77,13 @@ h2.article_status {
   padding:15px;
   background:#cfc;
 }
+
+input[type=checkbox] {
+  width:20px !important;
+  float:left;
+}
+
+#tasks {
+  float:right;
+  width:66.5%;
+}

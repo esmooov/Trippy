@@ -14,3 +14,10 @@ input.input_field {
   margin-left: 12px; 
     width:95%;
   }
+
+
+  #tasks {
+    margin-top:10px;
+    float:right;
+    width:50%;
+  }
