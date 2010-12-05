@@ -2,11 +2,12 @@
 
 require 'rubygems'
 require 'daemons'
+dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
  
 daemon_options = {
   :multiple   => false,
   :dir_mode   => :normal,
-  :dir        => "/tmp/pids",
+  :dir        => File.join(dir, 'tmp', 'pids'),
   :backtrace  => true
 }
  
@@ -18,7 +19,7 @@ Daemons.run_proc('job_runner', daemon_options) do
   end
   
   Dir.chdir dir
-  RAILS_ENV = ARGV.first || ENV['RAILS_ENV'] || 'development'
+  RAILS_ENV = ARGV.first || ENV['ENV'] || 'development'
   require File.join(File.expand_path("../trippy",__FILE__))
   
   Delayed::Worker.new.start
