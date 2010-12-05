@@ -76,7 +76,7 @@ def length_of_journey(origin,destination,geo)
   hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
 end
 
-def select_articles(origin,destination,twitter_account,activity,geo)
+def select_articles(origin,destination,twitter_account,activity = nil,geo = nil)
   if activity
     LOG.info activity
     myjourney = ACTIVITIES[activity]
@@ -88,7 +88,7 @@ def select_articles(origin,destination,twitter_account,activity,geo)
   LOG.info(myjourney)
   articles = []
   read_time = 0
-  urls = hydra_fetch(@twitter_account)
+  urls = hydra_fetch(twitter_account)
   urls.each do |url|
     article = url[:request].handled_response
     LOG.info "processing #{article.title}"

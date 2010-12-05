@@ -36,7 +36,7 @@ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 
 sudo gem update --system
 sudo gem install sqlite3-ruby rails capistrano \
-sinatra haml rest-client readability nokogiri daemons \
+sinatra haml rest-client ruby-readability nokogiri daemons \
 sanitize twitter-text crack curb typhoeus --no-ri --no-rdoc
 sudo gem install passenger -v 3.0.0 --no-ri --no-rdoc
 
