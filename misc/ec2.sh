@@ -24,6 +24,7 @@ apt-get -y install libmysql-ruby libmysqlclient-dev
 apt-get -y install sqlite3 libsqlite3-dev libsqlite3-ruby1.8 libdbd-sqlite3-ruby1.8
 apt-get -y install libssl-dev 
 apt-get -y install libcurl4-openssl-dev
+apt-get -y intall libxml2 libxslt
 apt-get -y install unzip
 apt-get -y update
 
@@ -35,8 +36,9 @@ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 
 sudo gem update --system
 sudo gem install sqlite3-ruby rails capistrano \
-passenger -v 3.0.0 sinatra haml rest_client readability \ 
+sinatra haml rest-client readability nokogiri \
 sanitize twitter-text crack curb typhoeus --no-ri --no-rdoc
+sudo gem install passenger -v 3.0.0 --no-ri --no-rdoc
 
 sudo passenger-install-nginx-module --auto --prefix=/opt/nginx --auto-download
 
@@ -45,13 +47,8 @@ sudo mkdir -p /var/www/html/trippy
 sudo mkdir -p /var/www/html/trippy/shared
 sudo chown -R ubuntu /var/www/html/trippy/shared
 
-#create git repo folder
-sudo mkdir -p /var/www/git/trippy
-git clone git://github.com/esmooov/Trippy.git /var/www/git/trippy
-chown -R ubuntu /var/www/git/trippy
-
 # install nginx.conf
-# which will run the server on port 81
+# which will run the server on port 80
 cd /opt/nginx/conf && \
 curl -O https://gist.github.com/raw/5c8de640c887b22a9446/trippy-nginx.conf
 
