@@ -6,7 +6,12 @@ require 'delayed_job'
 require 'sinatra'
 require 'haml'
 require 'logger'
-LOG = Logger.new(STDOUT)
+
+def log_loc
+  loc = Sinatra::Application.environment.to_s == "production" ? "log/production.log" : STDOUT
+end
+
+LOG = Logger.new(log_loc)
 
 require File.expand_path("../lib/reader.rb", __FILE__)
 
