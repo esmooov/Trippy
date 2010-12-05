@@ -15,10 +15,10 @@ $(function(){
       function(pos){
         geo = {};
         geo.lat = pos.coords.latitude;
-        geo.long = pos.coords.longitude;
+        geo.lng = pos.coords.longitude;
         $('#location_field').attr("disabled","disabled");
-        $('#location_field').val(geo.lat+" , "+geo.long);
-        $('#geo_long').val(geo.long);
+        $('#location_field').val(geo.lat+" , "+geo.lng);
+        $('#geo_long').val(geo.lng);
         $('#geo_lat').val(geo.lat);
       },
       function(){
@@ -48,7 +48,7 @@ var Trippy = {
 				for(i = 0; i < data["articles"]["articles"].length ; i++) {
 					$("#articles").append("<li>" +
 					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
-						data["articles"]["articles"][i]["text"] + "<\/li>");
+						data["articles"]["articles"][i]["html"] + "<\/li>");
 				}
 				$("h2.article_status").append("In your " + data["articles"]["journey_length"] + " minute long journey " +
 					"you can read " + data["articles"]["articles"].length + " articles");
