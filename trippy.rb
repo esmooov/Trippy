@@ -24,6 +24,10 @@ get '/' do
   haml :index
 end
 
+get '/articles' do
+  redirect '/'
+end
+
 post '/articles' do
   @origin = params[:origin]
   @destination = params[:destination]

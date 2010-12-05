@@ -71,3 +71,9 @@ input.input_field {
 input[type=submit] {
   clear:both;
 }
+
+h2.article_status {
+  display:none;
+  padding:15px;
+  background:#cfc;
+}

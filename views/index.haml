@@ -41,6 +41,6 @@
           - if @msg
             :javascript
               $(function(){
-                $("h2.article_status").append("#{@msg}")
+                $("h2.article_status").show().append("#{@msg}")
                 Trippy.startJobChecker();
               });
