@@ -25,7 +25,7 @@ apt-get -y install sqlite3 libsqlite3-dev libsqlite3-ruby1.8 libdbd-sqlite3-ruby
 apt-get -y install libssl-dev 
 apt-get -y install libcurl4-openssl-dev
 apt-get -y install libxslt-dev libxml2-dev
-apt-get -y install unzip
+apt-get -y install zip unzip
 apt-get -y update
 
 curl -O http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz && \

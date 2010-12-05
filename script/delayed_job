@@ -2,12 +2,11 @@
 
 require 'rubygems'
 require 'daemons'
-dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
  
 daemon_options = {
   :multiple   => false,
   :dir_mode   => :normal,
-  :dir        => File.join(dir, 'tmp', 'pids'),
+  :dir        => "/tmp/pids",
   :backtrace  => true
 }
  
