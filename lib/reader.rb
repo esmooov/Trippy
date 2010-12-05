@@ -8,14 +8,15 @@ require 'twitter-text'
 require 'crack'
 require 'curb'
 require 'typhoeus'
+require File.expand_path('./article', File.dirname(__FILE__))
 
 CONFIG = YAML::load(File.open(File.expand_path("../../config/config.yml", __FILE__)))
 
 ACTIVITIES = {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
 
-def read_time(words)
-  minutes = words / 250
-end
+SAVE_DIR = File.expand_path("../../public/articles/#{@hash}.json",__FILE__)
+
+FileUtils.mkdir_p SAVE_DIR unless File.exists?(SAVE_DIR)
 
 def determine_if_list(account)
   if account.scan("/").size > 0
@@ -46,20 +47,7 @@ def hydra_fetch(account = "longreads")
   urls.each do |url|
     url[:request] = Typhoeus::Request.new(url[:location] , :follow_location => true, :timeout => 2000, :cache_timeout => 200, :user_agent => "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7")
     url[:request].on_complete do |response|
-      url[:response] = response
-      begin
-        url[:title] = Nokogiri::HTML(response.body).search('title').text
-      rescue
-        url[:title] = ""
-      end
-      begin
-        readability_html = Readability::Document.new(response.body).content
-        url[:clean_text] = Sanitize.clean(readability_html)
-      rescue
-        url[:clean_text] = ""
-      end
-      url[:wc] = url[:clean_text].split(/ /).size
-      url[:readability_html] = readability_html
+      Article.new(response)
     end
     hydra.queue url[:request]
     LOG.info url[:location]
@@ -70,7 +58,7 @@ end
 
 def get_lat_long(address)
   r = Crack::JSON.parse(RestClient.get("http://maps.googleapis.com/maps/api/geocode/json?address=#{address}&sensor=false"))
-  r['results'][0]['geometry']['location']  
+  r['results'][0]['geometry']['location']
 end
 
 def length_of_journey(origin,destination,geo)
@@ -80,13 +68,13 @@ def length_of_journey(origin,destination,geo)
     origin_lat_long = {"lat" => geo[0],"lng" => geo[1]}
   end
   dest_lat_long = get_lat_long(CGI.escape(destination))
-  
-  hopstop = RestClient.get("http://www.hopstop.com/ws/GetRoute?licenseKey=" + 
-  CONFIG['hopstop_api'] + "&city1=newyork&x1=" + origin_lat_long['lat'].to_s + 
+
+  hopstop = RestClient.get("http://www.hopstop.com/ws/GetRoute?licenseKey=" +
+  CONFIG['hopstop_api'] + "&city1=newyork&x1=" + origin_lat_long['lat'].to_s +
   "&y1=" + origin_lat_long['lng'].to_s + "&city2=newyork&x2=" + dest_lat_long['lat'].to_s +
   "&y2=" + dest_lat_long['lng'].to_s +
   "&day=1&time=#{Time.now.strftime("%H:%m")}&mode=s")
-  hopstop = Crack::XML.parse(hopstop)  
+  hopstop = Crack::XML.parse(hopstop)
   hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
 end
 
@@ -101,24 +89,25 @@ def select_articles(origin,destination,twitter_account,activity,geo)
   end
   LOG.info(myjourney)
   articles = []
-  cur_wc = 0
+  read_time = 0
   urls = hydra_fetch(@twitter_account)
   urls.each do |url|
-    article = url
-    LOG.info "processing #{article[:title]}"
+    article = url[:request].handled_response
 
-    if article[:wc] > CONFIG['wc_threshhold'] && (read_time(article[:wc]) <= ((myjourney / 60) - read_time(cur_wc)))
-      LOG.info "accepting #{article[:title]} with read time: #{read_time(article[:wc])}"
-      cur_wc += article[:wc]
-      articles << {:text => article[:readability_html], :title => article[:title]}
+    LOG.info "processing #{article.title}"
+
+    if article.wc > CONFIG['wc_threshhold'] && (article.read_time <= ((myjourney / 60) - read_time))
+      LOG.info "accepting #{article.title} with read time: #{article.read_time}"
+      read_time += article.read_time
+      articles << article
     else
-      LOG.info "rejecting #{article[:title]} with read time: #{read_time(article[:wc])}"
+      LOG.info "rejecting #{article.title} with read time: #{article.read_time}"
     end
   end
   LOG.info "total travel time is #{myjourney / 60}"
-  LOG.info "total read time for this dump is #{read_time(cur_wc)}"
+  LOG.info "total read time for this dump is #{read_time}"
   LOG.info "total articles is #{articles.size}"
-  
+
   {:articles => articles, :journey_length => (myjourney / 60)}
 end
 
@@ -133,7 +122,7 @@ def check_job_status
   end
 end
 
-class ArticleJob 
+class ArticleJob
   def initialize(origin,destination,hash,twitter_account,activity,geo)
     @origin = origin
     @destination = destination
@@ -142,7 +131,7 @@ class ArticleJob
     @activity = activity
     @geo = geo
   end
-  
+
   def perform
     articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity,@geo)}
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
