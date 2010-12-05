@@ -12,7 +12,7 @@ require File.expand_path("../lib/reader.rb", __FILE__)
 
 configure do
   config = YAML::load(File.open('config/database.yml'))
-  environment = Sinatra::Application.environment.to_s
+  environment = ENV['ENV'] || Sinatra::Application.environment.to_s
   ActiveRecord::Base.logger = Logger.new($stdout)
   ActiveRecord::Base.establish_connection(
     config[environment]
