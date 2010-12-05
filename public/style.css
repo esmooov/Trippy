@@ -1,17 +1,25 @@
+body {
+	background:#fefefe;
+	font-family:Georgia;
+}
+
+#page {
+	background:#fff;
+}
 h1 {
   text-align: center;
   font-size: 36px;
-  font-family: helevetica,arial,sans-serif;
+  font-family: "Helvetica",arial,sans-serif;
   color: #999;
-  padding-top: 10px; }
+  padding-top: 10px; 
+  background:#fff;
+}
 
 #container {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: 80px;
-  bottom: 10px; }
-
+	margin:0 auto;
+	padding:0 30px 10px 30px;
+	background:#fff;
+}
 h2.label {
   color: #666;
   margin: 5px 10px;
@@ -24,3 +32,10 @@ input.input_field {
 
 #commute_check {
   margin-bottom: 15px; }
+
+li {
+	list-style-type:none;
+	border-top:1px solid #cecece;
+	border-bottom:1px solid #cecece;
+	padding: 20px 0 20px 0;
+}
