@@ -11,7 +11,7 @@ require 'typhoeus'
 
 CONFIG = YAML::load(File.open(File.expand_path("../../config/config.yml", __FILE__)))
 
-ACTIVITIES = {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800}
+ACTIVITIES = {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
 
 def read_time(words)
   minutes = words / 250
