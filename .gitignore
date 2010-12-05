@@ -4,3 +4,5 @@ db/development.sqlite3
 public/articles/2e23bbb9823347784a35dd5474300e0a.json
 public/articles/6577e5016d88a319a19b3455bf2ade24.json
 public/articles/
+Capfile
+config/deploy.rb
