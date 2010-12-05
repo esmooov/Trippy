@@ -5,14 +5,18 @@ body {
 
 #page {
 	background:#fff;
+	border-top:1px solid #000;
+	min-height:400px;
 }
 h1 {
-  text-align: center;
+  text-align: left;
   font-size: 36px;
   font-family: "Helvetica",arial,sans-serif;
-  color: #999;
-  padding-top: 10px; 
-  background:#fff;
+  color: #fff;
+  background:#000;
+  margin-left:30px;
+  padding:10px;
+  border-top:1px solid #fff;
 }
 
 #container {
@@ -25,7 +29,10 @@ h2.label {
   margin: 5px 10px;
   font-family: helvetica,arial,sans-serif;
   font-size: 20px;
-  display: inline; }
+  display: inline; 
+  float:left;
+  clear:both;
+}
 
 input.input_field {
   margin-bottom: 10px; }
@@ -38,4 +45,29 @@ li {
 	border-top:1px solid #cecece;
 	border-bottom:1px solid #cecece;
 	padding: 20px 0 20px 0;
+}
+
+form {
+  overflow:auto;
+}
+
+#field_container {
+  overflow:auto;
+  clear:both;
+}
+
+input {
+  margin-bottom:20px;
+}
+input.input_field {
+  height:30px;
+  width:65%;
+  font-size:20px;
+  font-family:Georgia;
+  padding:5px;
+  float:right;
+}
+
+input[type=submit] {
+  clear:both;
 }

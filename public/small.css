@@ -11,8 +11,15 @@ h2.label {
   display: block; }
 
 input.input_field {
-  margin-left: 12px; }
+  margin-left: 12px; 
+  width:95%;
+  
+  }
 
 #articles {
 	font-size:18px;
+}
+
+#articles h2 {
+  font-size:20px;
 }
