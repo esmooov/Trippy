@@ -14,24 +14,25 @@
       %h1 TRIPPY
       #container
         %form{:method => "post", :action => '/articles'}
-          %h2{:class => "label"} Commute?
-          %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
-          %select{:style => "display:none;", :id => "tasks", :name => "activities"}
-            %option{:value => "bathroom"} Go to the bathroom (5 min.)
-            %option{:value => "meat"} Thaw one pound of meat (8 min.)
-            %option{:value => "hair"} Watch your girlfriend dry her hair (10 min.)
-            %option{:value => "adobe"} Install Adobe Creative Suite (30 min.) 
-            %option{:value => "compile"} Wait for GHC to compile (45 min.)
-          %br/
-          %h2{:class => "label"} Twitter Account:
-          %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
-          %br/
-          %h2{:class => "label"} Current Location:
-          %input{:class => "input_field" ,"type" => "text", "name" => "origin", :id => "location_field"}
-          %br/
-          %h2{:class => "label"} Commute Destination:
-          %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
-          %br/
+          #field_container
+            %h2{:class => "label"} Commute?
+            %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
+            %select{:style => "display:none;", :id => "tasks", :name => "activities"}
+              %option{:value => "bathroom"} Go to the bathroom (5 min.)
+              %option{:value => "meat"} Thaw one pound of meat (8 min.)
+              %option{:value => "hair"} Watch your girlfriend dry her hair (10 min.)
+              %option{:value => "adobe"} Install Adobe Creative Suite (30 min.) 
+              %option{:value => "compile"} Wait for GHC to compile (45 min.)
+            %br/
+            %h2{:class => "label"} Twitter Account:
+            %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
+            %br/
+            %h2{:class => "label"} Current Location:
+            %input{:class => "input_field" ,"type" => "text", "name" => "origin", :id => "location_field"}
+            %br/
+            %h2{:class => "label"} Commute Destination:
+            %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
+            %br/
           %input{:type => "submit"}
           %h2.article_status
           
