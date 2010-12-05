@@ -11,6 +11,8 @@ require 'typhoeus'
 
 CONFIG = YAML::load(File.open(File.expand_path("../../config/config.yml", __FILE__)))
 
+ACTIVITIES = {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
+
 def read_time(words)
   minutes = words / 250
 end
@@ -73,8 +75,13 @@ def length_of_journey(origin,destination)
   hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
 end
 
-def select_articles(origin,destination,twitter_account)
-  myjourney = length_of_journey(origin,destination)
+def select_articles(origin,destination,twitter_account,activity)
+  if activity
+    LOG.info activity
+    myjourney = ACTIVITIES[activity]
+  else
+    myjourney = length_of_journey(origin,destination)
+  end
   LOG.info(myjourney)
   articles = []
   cur_wc = 0
@@ -99,16 +106,17 @@ def select_articles(origin,destination,twitter_account)
 end
 
 class ArticleJob 
-  def initialize(origin,destination,hash,twitter_account)
+  def initialize(origin,destination,hash,twitter_account,activity)
     @origin = origin
     @destination = destination
     @hash = hash
     @twitter_account = twitter_account
+    @activity = activity
   end
   
   def perform
-    articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account)}
-    
+    articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity)}
+    LOG.info "PPPP"+@activity
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
       f.write articles.to_json
     end

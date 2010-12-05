@@ -33,7 +33,8 @@ post '/articles' do
   @destination = params[:destination]
   @twitter_account = params[:twitter_account]
   @hash = Digest::MD5.hexdigest("#{Time.now.to_i}trippy")
-  Delayed::Job.enqueue ArticleJob.new(@origin, @destination, @hash, @twitter_account)
+  @activity = (params[:commute] && params[:commute] == "on" ? nil : params[:activities] )
+  Delayed::Job.enqueue ArticleJob.new(@origin, @destination, @hash, @twitter_account, @activity)
   @msg = "processing"
   
   haml :index

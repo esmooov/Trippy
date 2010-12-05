@@ -17,9 +17,12 @@
           #field_container
             %h2{:class => "label"} Commute?
             %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
-            %select{:style => "display:none;", :id => "tasks"}
-              %option{:value => "bathroom"} Go to the bathroom
-              %option{:value => "meat"} Thaw one pound of meat
+            %select{:style => "display:none;", :id => "tasks", :name => "activities"}
+              %option{:value => "bathroom"} Go to the bathroom (5 min.)
+              %option{:value => "meat"} Thaw one pound of meat (8 min.)
+              %option{:value => "hair"} Watch your girlfriend dry her hair (10 min.)
+              %option{:value => "adobe"} Install Adobe Creative Suite (30 min.) 
+              %option{:value => "compile"} Wait for GHC to compile (45 min.)
             %br/
             %h2{:class => "label"} Twitter Account:
             %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
