@@ -15,7 +15,7 @@
       %h1 TRIPPY
       #container
         %h2.article_status
-        %form{:method => "post", :action => '/articles'}
+        %form{:method => "post", :action => '/articles', :id => "query"}
           #field_container
             %h2{:class => "label"} Commute?
             %input{:class => "input_field", "type" => "checkbox", "name" => "commute", "checked" => "checked", :id => "commute_check"}
@@ -27,7 +27,7 @@
               %option{:value => "compile"} Wait for GHC to compile (45 min.)
             %br/
             %h2{:class => "label"} Twitter Account:
-            %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
+            %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account", :id => "twitter_name"}
             %br/
             %h2{:class => "label"}
               Current Location:
