@@ -6,3 +6,4 @@ public/articles/6577e5016d88a319a19b3455bf2ade24.json
 public/articles/
 Capfile
 config/deploy.rb
+tmp/pids

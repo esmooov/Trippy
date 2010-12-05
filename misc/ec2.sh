@@ -24,7 +24,7 @@ apt-get -y install libmysql-ruby libmysqlclient-dev
 apt-get -y install sqlite3 libsqlite3-dev libsqlite3-ruby1.8 libdbd-sqlite3-ruby1.8
 apt-get -y install libssl-dev 
 apt-get -y install libcurl4-openssl-dev
-apt-get -y intall libxml2 libxslt
+apt-get -y install libxslt-dev libxml2-dev
 apt-get -y install unzip
 apt-get -y update
 
@@ -36,7 +36,7 @@ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 
 sudo gem update --system
 sudo gem install sqlite3-ruby rails capistrano \
-sinatra haml rest-client readability nokogiri \
+sinatra haml rest-client readability nokogiri daemons \
 sanitize twitter-text crack curb typhoeus --no-ri --no-rdoc
 sudo gem install passenger -v 3.0.0 --no-ri --no-rdoc
 
