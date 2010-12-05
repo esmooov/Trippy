@@ -1,13 +1,12 @@
 class Article
   WPM = 250
 
-  attr_accessor :readability_html, :clean_text, :title
+  attr_accessor :readability_html, :title
 
   def initialize(response)
-    @response         = response
-    @readability_html = Readability::Document.new(@response.body).content rescue ""
+    @readability_html = Readability::Document.new(response.body).content rescue ""
     @clean_text       = Sanitize.clean(readability_html) rescue ""
-    @title            = Nokogiri::HTML(@response.body).search('title').text rescue ""
+    @title            = Nokogiri::HTML(response.body).search('title').text rescue ""
   end
 
   def wc
@@ -18,9 +17,4 @@ class Article
     wc / WPM
   end
 
-  def to_json
-    [:clean_text, :title].inject({}) { |sym|
-      memo[sym] = send(sym)
-    }.to_json
-  end
 end
