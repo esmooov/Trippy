@@ -50,7 +50,7 @@ sudo chown -R ubuntu /var/www/html/trippy/shared
 # install nginx.conf
 # which will run the server on port 80
 cd /opt/nginx/conf && \
-curl -O https://gist.github.com/raw/5c8de640c887b22a9446/trippy-nginx.conf
+sudo curl https://gist.github.com/raw/5c8de640c887b22a9446/trippy-nginx.conf -o nginx.conf
 
 # install nginx restarter in init.d
 cd /etc/init.d && \
