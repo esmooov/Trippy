@@ -73,8 +73,12 @@ def get_lat_long(address)
   r['results'][0]['geometry']['location']  
 end
 
-def length_of_journey(origin,destination)
-  origin_lat_long = get_lat_long(CGI.escape(origin))
+def length_of_journey(origin,destination,geo)
+  if geo == false
+    origin_lat_long = get_lat_long(CGI.escape(origin))
+  else
+    origin_lat_long = {"lat" => geo[0],"lng" => geo[1]}
+  end
   dest_lat_long = get_lat_long(CGI.escape(destination))
   
   hopstop = RestClient.get("http://www.hopstop.com/ws/GetRoute?licenseKey=" + 
@@ -86,12 +90,14 @@ def length_of_journey(origin,destination)
   hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
 end
 
-def select_articles(origin,destination,twitter_account,activity)
+def select_articles(origin,destination,twitter_account,activity,geo)
   if activity
     LOG.info activity
     myjourney = ACTIVITIES[activity]
+  elsif geo
+    myjourney = length_of_journey(origin,destination,geo)
   else
-    myjourney = length_of_journey(origin,destination)
+    myjourney = length_of_journey(origin,destination,false)
   end
   LOG.info(myjourney)
   articles = []
@@ -117,16 +123,17 @@ def select_articles(origin,destination,twitter_account,activity)
 end
 
 class ArticleJob 
-  def initialize(origin,destination,hash,twitter_account,activity)
+  def initialize(origin,destination,hash,twitter_account,activity,geo)
     @origin = origin
     @destination = destination
     @hash = hash
     @twitter_account = twitter_account
     @activity = activity
+    @geo = geo
   end
   
   def perform
-    articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity)}
+    articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity,@geo)}
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
       f.write articles.to_json
     end

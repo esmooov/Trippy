@@ -29,12 +29,16 @@
             %h2{:class => "label"} Twitter Account:
             %input{:class => "input_field" ,"type" => "text", "name" => "twitter_account"}
             %br/
-            %h2{:class => "label"} Current Location:
+            %h2{:class => "label"} 
+              Current Location:
+              %span{:id => "gps"} Geo
             %input{:class => "input_field" ,"type" => "text", "name" => "origin", :id => "location_field"}
             %br/
             %h2{:class => "label"} Commute Destination:
             %input{:class => "input_field" ,"type" => "text", "name" => "destination", :id => "destination_field"}
             %br/
+          %input{"type" => "text", "name" => "geolat", "style" => "display:none;", :id => "geo_lat"}
+          %input{"type" => "text", "name" => "geolong", "style" => "display:none;", :id => "geo_long"}
           %input{:type => "submit"}
           
           #articles

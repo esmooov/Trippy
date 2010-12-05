@@ -10,7 +10,22 @@ $(function(){
       $('#destination_field').attr("disabled", "disabled");
     }
   });
-	
+  $('#gps').click(function(){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        geo = {};
+        geo.lat = pos.coords.latitude;
+        geo.long = pos.coords.longitude;
+        $('#location_field').attr("disabled","disabled");
+        $('#location_field').val(geo.lat+" , "+geo.long);
+        $('#geo_long').val(geo.long);
+        $('#geo_lat').val(geo.lat);
+      },
+      function(){
+        $('h2.article_status').html("Your location could not be found. Please enter it manually.").show();
+      }
+    );
+  });
 })
 
 var Trippy = {
