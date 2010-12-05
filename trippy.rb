@@ -31,7 +31,7 @@ post '/articles' do
   @origin = params[:origin]
   @destination = params[:destination]
   @twitter_account = params[:twitter_account]
-  @hash = Digest::MD5.hexdigest("#{Time.now.to_i}trippy")
+  @hash = Digest::MD5.hexdigest("#{Time.now.to_i}#{rand(1000)}")
   @activity = (params[:commute] && params[:commute] == "on" ? nil : params[:activities] )
   @geo = (params[:geolat] == "" ? nil : [params[:geolat],params[:geolong]])
   Delayed::Job.enqueue ArticleJob.new(@origin, @destination, @hash, @twitter_account, @activity, @geo)
@@ -52,7 +52,7 @@ get '/articles_ready/:hash' do
   else
     error = check_job_status
     if error
-      @articles = {:msg => "error", :error => error, :articles => []}.to_json
+      @articles = {:msg => "error", :articles => []}.to_json
     else
       @articles = {:msg => "not_ready", :articles => []}.to_json
     end

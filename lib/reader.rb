@@ -32,9 +32,7 @@ end
 def hydra_fetch(account = "longreads")
   urls = []
   hydra = Typhoeus::Hydra.new
-  LOG.info "Cracking list"
   list = Crack::JSON.parse(RestClient.get(determine_if_list(account)))
-  LOG.info list
   list.each do |tweet|
     text = tweet['text']
     tweet_urls = Twitter::Extractor.extract_urls(text)
