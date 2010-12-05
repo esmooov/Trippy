@@ -17,11 +17,22 @@ def read_time(words)
   minutes = words / 250
 end
 
+def determine_if_list(account)
+  if account.scan("/").size > 0
+    #it's a list
+    endpoint = "http://api.twitter.com/1/#{account.split("/")[0]}/lists/#{account.split("/")[1]}/statuses.json?per_page=30"
+  else
+    endpoint = "http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{account}&count=30"
+  end
+  LOG.info(endpoint)
+  endpoint
+end
+
 def hydra_fetch(account = "longreads")
   urls = []
   hydra = Typhoeus::Hydra.new
   LOG.info "Cracking list"
-  list = Crack::JSON.parse(RestClient.get("http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{account}&count=30"))
+  list = Crack::JSON.parse(RestClient.get(determine_if_list(account)))
   LOG.info list
   list.each do |tweet|
     text = tweet['text']
