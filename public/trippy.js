@@ -1,5 +1,13 @@
+LOCAL_STORAGE = 'localStorage' in window && window['localStorage'] !== null;
+function store(cb) {
+  if(LOCAL_STORAGE) cb(window.localStorage);
+};
+
+
 $(function(){
+
   $('#commute_check').click(function(){
+
     if ($('#commute_check').attr("checked") == true){
       $('#tasks').hide();
       $('#location_field').attr("disabled", "");
@@ -10,15 +18,31 @@ $(function(){
       $('#destination_field').attr("disabled", "disabled");
     }
   });
+  
+  // Add previous answers if they exist
+  store(function(storage){
+    $('#destination_field').val(storage["trippy-destination"]);
+    $('#location_field').val(storage["trippy-location"]);
+    $('#twitter_name').val(storage["trippy-twitter"]);
+  });
+  $("#query").submit(function(){
+    // Save answers to the localstor
+    store(function(storage){
+      storage["trippy-destination"] = $('#destination_field').val();
+      storage["trippy-location"]    = $('#location_field').val();
+      storage["trippy-twitter"]     = $('#twitter_name').val();
+    });
+  });
+  
   $('#gps').click(function(){
     navigator.geolocation.getCurrentPosition(
       function(pos){
         geo = {};
         geo.lat = pos.coords.latitude;
-        geo.long = pos.coords.longitude;
+        geo.lng = pos.coords.longitude;
         $('#location_field').attr("disabled","disabled");
-        $('#location_field').val(geo.lat+" , "+geo.long);
-        $('#geo_long').val(geo.long);
+        $('#location_field').val(geo.lat+" , "+geo.lng);
+        $('#geo_long').val(geo.lng);
         $('#geo_lat').val(geo.lat);
       },
       function(){
@@ -48,7 +72,7 @@ var Trippy = {
 				for(i = 0; i < data["articles"]["articles"].length ; i++) {
 					$("#articles").append("<li>" +
 					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
-						data["articles"]["articles"][i]["text"] + "<\/li>");
+						data["articles"]["articles"][i]["html"] + "<\/li>");
 				}
 				$("h2.article_status").append("In your " + data["articles"]["journey_length"] + " minute long journey " +
 					"you can read " + data["articles"]["articles"].length + " articles");
