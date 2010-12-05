@@ -109,6 +109,8 @@ def select_articles(origin,destination,twitter_account,activity,geo)
 end
 
 def check_job_status
+  return nil if Delayed::Job.all.empty?
+  
   jobs = Delayed::Job.all.size
   error = Delayed::Job.all.first.last_error ? Delayed::Job.all.first.last_error.to_s.gsub(/\\n|\n|\{/,'<br/>') : nil
   if error
