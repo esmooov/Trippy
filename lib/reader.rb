@@ -116,7 +116,6 @@ class ArticleJob
   
   def perform
     articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity)}
-    LOG.info "PPPP"+@activity
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
       f.write articles.to_json
     end
