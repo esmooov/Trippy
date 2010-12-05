@@ -20,7 +20,7 @@ Daemons.run_proc('job_runner', daemon_options) do
   
   Dir.chdir dir
   RAILS_ENV = ARGV.first || ENV['ENV'] || 'development'
-  require File.join(File.expand_path("../trippy",__FILE__))
+  require File.join(File.expand_path("../../trippy",__FILE__))
   
   Delayed::Worker.new.start
 end
