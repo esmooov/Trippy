@@ -1,7 +1,7 @@
 class Article
   WPM = 250
 
-  attr_accessor :html, :title, :id
+  attr_accessor :html, :title
 
   def initialize(response)
     @html  = Readability::Document.new(response.body).content rescue ""
