@@ -7,7 +7,6 @@ class Article
     @html  = Readability::Document.new(response.body).content rescue ""
     @text  = Sanitize.clean(@html) rescue ""
     @title = Nokogiri::HTML(response.body).search('title').text rescue ""
-    @id    = Digest::MD5.hexdigest(@text)
   end
 
   def wc
@@ -17,5 +16,4 @@ class Article
   def read_time
     wc / WPM
   end
-
 end
