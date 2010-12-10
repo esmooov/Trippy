@@ -46,6 +46,10 @@ module Trippy
       @destination = lat_long(opts[:destination])
       @activity = opts[:activity] || nil
       @journey_length = @activity ? non_commute_journey[@activity] : query_hopstop      
+   
+      @articles = []
+      @accepted_article_titles = []
+      @read_time = 0
     end
     
     def lat_long(address)
@@ -68,30 +72,34 @@ module Trippy
       {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
     end
     
+    def acceptable_article?(article)
+      article.wc > CONFIG['wc_threshhold']                           &&
+      (article.read_time <= ((@journey_length / 60) - @read_time))   &&
+      !@accepted_article_titles.include?(article.title)  #dedupe
+    end
+    
     def get_articles(twitter_account)
-      articles = []
-      read_time = 0
       urls = Trippy::Request.hydra_fetch(twitter_account)
       urls.each do |url|
         article = url[:request].handled_response
         LOG.info "processing #{article.title}"
-
-        if article.wc > CONFIG['wc_threshhold'] && (article.read_time <= ((@journey_length / 60) - read_time))
+        @read_time += article.read_time
+        if acceptable_article?(article)
           LOG.info "accepting #{article.title} with read time: #{article.read_time}"
-          read_time += article.read_time
-          articles << article
+          @articles << article
+          @accepted_article_titles << article.title
         else
-          LOG.info "rejecting #{article.title} with read time: #{article.read_time}"
+          LOG.info("rejecting #{article.title}")
         end
       end
       LOG.info "total travel time is #{journey_length / 60}"
       LOG.info "total read time for this dump is #{read_time}"
       LOG.info "total articles is #{articles.size}"
 
-      {:articles => articles, :journey_length => (@journey_length / 60)}
+      {:articles => @articles, :journey_length => (@journey_length / 60)}
     end
   end
-  
+    
   class Request
     class << self
       def hydra_fetch(account = "longreads")
