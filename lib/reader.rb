@@ -11,102 +11,118 @@ require 'typhoeus'
 require File.expand_path('./article', File.dirname(__FILE__))
 
 CONFIG = YAML::load(File.open(File.expand_path("../../config/config.yml", __FILE__)))
-
-ACTIVITIES = {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
-
 SAVE_DIR = File.expand_path("../../public/articles/#{@hash}.json",__FILE__)
-
 FileUtils.mkdir_p SAVE_DIR unless File.exists?(SAVE_DIR)
 
-def determine_if_list(account)
-  if account.scan("/").size > 0
-    #it's a list
-    endpoint = "http://api.twitter.com/1/#{account.split("/")[0]}/lists/#{account.split("/")[1]}/statuses.json?per_page=30"
-  else
-    endpoint = "http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{account}&count=30"
-  end
-  LOG.info(endpoint)
-  endpoint
-end
-
-def hydra_fetch(account = "longreads")
-  urls = []
-  hydra = Typhoeus::Hydra.new
-  list = Crack::JSON.parse(RestClient.get(determine_if_list(account)))
-  list.each do |tweet|
-    text = tweet['text']
-    tweet_urls = Twitter::Extractor.extract_urls(text)
-    tweet_urls.flatten
-    urls << tweet_urls
-  end
-  urls = urls.flatten.uniq
-  LOG.info urls
-  urls.collect!{|url| {:location => url} }
-  urls.each do |url|
-    url[:request] = Typhoeus::Request.new(url[:location] , :follow_location => true, :timeout => 2000, :cache_timeout => 200, :user_agent => "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7")
-    url[:request].on_complete do |response|
-      Article.new(response)
+module Trippy
+  class Twitter
+    API_BASE = "http://api.twitter.com/1/"
+    attr_reader :account
+        
+    def initialize(account)
+      @account = account
     end
-    hydra.queue url[:request]
-    LOG.info url[:location]
+    
+    def endpoint
+      endpoint = if @account.scan("/").size > 0
+        #it's a list
+        "#{account.split("/")[0]}/lists/#{account.split("/")[1]}/statuses.json?per_page=30"
+      else
+        "http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{account}&count=30"
+      end
+      endpoint      
+    end
+    
   end
-  hydra.run
-  urls
-end
+  
+  class Journey
+    attr_reader :origin, :destination, :activity, :journey_length
+    
+    # origin, destination, geo, activity
+    def initialize(opts = {})
+      raise RuntimeError, "you must specify origin" unless opts[:origin]
+      
+      @origin = opts[:geo] ? {"lat" => geo[0],"lng" => geo[1]} : lat_long(opts[:origin])
+      @destination = lat_long(opts[:destination])
+      @activity = opts[:activity] || nil
+      @journey_length = @activity ? non_commute_journey[@activity] : query_hopstop      
+    end
+    
+    def lat_long(address)
+      r = Crack::JSON.parse(RestClient.get("http://maps.googleapis.com/maps/api/geocode/json?address=#{CGI.escape(address)}&sensor=false"))
+      r['results'][0]['geometry']['location']  
+    end
+    
+    def query_hopstop
+      LOG.info("querying hopstop")
+      hopstop = RestClient.get("http://www.hopstop.com/ws/GetRoute?licenseKey=" +
+      CONFIG['hopstop_api'] + "&city1=newyork&x1=" + @origin['lat'].to_s +
+      "&y1=" + @origin['lng'].to_s + "&city2=newyork&x2=" + @destination['lat'].to_s +
+      "&y2=" + @destination['lng'].to_s +
+      "&day=1&time=#{Time.now.strftime("%H:%m")}&mode=s")
+      hopstop = Crack::XML.parse(hopstop)
+      hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
+    end
+        
+    def non_commute_journey
+      {"meat" => 480, "bathroom" => 300, "hair" => 600, "nails" => 1200, "adobe" => 1800, "compile" => 3000}
+    end
+    
+    def get_articles(twitter_account)
+      articles = []
+      read_time = 0
+      urls = Trippy::Request.hydra_fetch(twitter_account)
+      urls.each do |url|
+        article = url[:request].handled_response
+        LOG.info "processing #{article.title}"
 
-def get_lat_long(address)
-  r = Crack::JSON.parse(RestClient.get("http://maps.googleapis.com/maps/api/geocode/json?address=#{address}&sensor=false"))
-  r['results'][0]['geometry']['location']
-end
+        if article.wc > CONFIG['wc_threshhold'] && (article.read_time <= ((@journey_length / 60) - read_time))
+          LOG.info "accepting #{article.title} with read time: #{article.read_time}"
+          read_time += article.read_time
+          articles << article
+        else
+          LOG.info "rejecting #{article.title} with read time: #{article.read_time}"
+        end
+      end
+      LOG.info "total travel time is #{journey_length / 60}"
+      LOG.info "total read time for this dump is #{read_time}"
+      LOG.info "total articles is #{articles.size}"
 
-def length_of_journey(origin,destination,geo)
-  if geo == false
-    origin_lat_long = get_lat_long(CGI.escape(origin))
-  else
-    origin_lat_long = {"lat" => geo[0],"lng" => geo[1]}
-  end
-  dest_lat_long = get_lat_long(CGI.escape(destination))
-
-  hopstop = RestClient.get("http://www.hopstop.com/ws/GetRoute?licenseKey=" +
-  CONFIG['hopstop_api'] + "&city1=newyork&x1=" + origin_lat_long['lat'].to_s +
-  "&y1=" + origin_lat_long['lng'].to_s + "&city2=newyork&x2=" + dest_lat_long['lat'].to_s +
-  "&y2=" + dest_lat_long['lng'].to_s +
-  "&day=1&time=#{Time.now.strftime("%H:%m")}&mode=s")
-  hopstop = Crack::XML.parse(hopstop)
-  hopstop['HopStopResponse']['RouteInfo']['TotalTime'].to_i
-end
-
-def select_articles(origin,destination,twitter_account,activity = nil,geo = nil)
-  if activity
-    LOG.info activity
-    myjourney = ACTIVITIES[activity]
-  elsif geo
-    myjourney = length_of_journey(origin,destination,geo)
-  else
-    myjourney = length_of_journey(origin,destination,false)
-  end
-  LOG.info(myjourney)
-  articles = []
-  read_time = 0
-  urls = hydra_fetch(twitter_account)
-  urls.each do |url|
-    article = url[:request].handled_response
-    LOG.info "processing #{article.title}"
-
-    if article.wc > CONFIG['wc_threshhold'] && (article.read_time <= ((myjourney / 60) - read_time))
-      LOG.info "accepting #{article.title} with read time: #{article.read_time}"
-      read_time += article.read_time
-      articles << article
-    else
-      LOG.info "rejecting #{article.title} with read time: #{article.read_time}"
+      {:articles => articles, :journey_length => (@journey_length / 60)}
     end
   end
-  LOG.info "total travel time is #{myjourney / 60}"
-  LOG.info "total read time for this dump is #{read_time}"
-  LOG.info "total articles is #{articles.size}"
-
-  {:articles => articles, :journey_length => (myjourney / 60)}
+  
+  class Request
+    class << self
+      def hydra_fetch(account = "longreads")
+        urls = []
+        hydra = Typhoeus::Hydra.new
+        list = Crack::JSON.parse(RestClient.get(Trippy::Twitter.new(account).endpoint))
+        list.each do |tweet|
+          text = tweet['text']
+          tweet_urls = ::Twitter::Extractor.extract_urls(text)
+          tweet_urls.flatten
+          urls << tweet_urls
+        end
+        urls = urls.flatten.uniq
+        LOG.info urls
+        urls.collect!{|url| {:location => url} }
+        urls.each do |url|
+          url[:request] = Typhoeus::Request.new(url[:location] , :follow_location => true, :timeout => 2000, :cache_timeout => 200, :user_agent => "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7")
+          url[:request].on_complete do |response|
+            Article.new(response)
+          end
+          hydra.queue url[:request]
+          LOG.info url[:location]
+        end
+        hydra.run
+        urls
+      end      
+    end
+  end
 end
+
+
 
 def check_job_status
   return nil if Delayed::Job.all.empty?
@@ -132,7 +148,10 @@ class ArticleJob
   end
 
   def perform
-    articles = {:msg => "OK", :articles => select_articles(@origin,@destination,@twitter_account,@activity,@geo)}
+    t = Trippy::Journey.new :origin => @origin, :destination => @destination, :geo => @geo, :activity => @activity
+    articles = t.get_articles(@twitter_account)
+    
+    articles = {:msg => "OK", :articles => articles}
     File.open(File.expand_path("../../public/articles/#{@hash}.json",__FILE__),"w+") do |f|
       f.write articles.to_json
     end
