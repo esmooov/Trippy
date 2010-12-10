@@ -18,7 +18,7 @@ module Trippy
   class Twitter
     API_BASE = "http://api.twitter.com/1/"
     attr_reader :account
-        
+
     def initialize(account)
       @account = account
     end
@@ -26,9 +26,9 @@ module Trippy
     def endpoint
       endpoint = if @account.scan("/").size > 0
         #it's a list
-        "#{account.split("/")[0]}/lists/#{account.split("/")[1]}/statuses.json?per_page=30"
+        API_BASE + "#{account.split("/")[0]}/lists/#{account.split("/")[1]}/statuses.json?per_page=30"
       else
-        "http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{account}&count=30"
+        API_BASE + "statuses/user_timeline.json?screen_name=#{account}&count=30"
       end
       endpoint      
     end
