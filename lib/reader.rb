@@ -92,9 +92,9 @@ module Trippy
           LOG.info("rejecting #{article.title}")
         end
       end
-      LOG.info "total travel time is #{journey_length / 60}"
-      LOG.info "total read time for this dump is #{read_time}"
-      LOG.info "total articles is #{articles.size}"
+      LOG.info "total travel time is #{@journey_length / 60}"
+      LOG.info "total read time for this dump is #{@read_time}"
+      LOG.info "total articles is #{@articles.size}"
 
       {:articles => @articles, :journey_length => (@journey_length / 60)}
     end
