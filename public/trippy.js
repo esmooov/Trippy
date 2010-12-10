@@ -53,35 +53,37 @@ $(function(){
 })
 
 var Trippy = {
-	startJobChecker : function() {
-		Trippy.checker_endpoint = "/articles_ready/" + articles_hash;
-		window.job_checker = window.setInterval(Trippy.checkJobStatus,5000);
-	},
-	checkJobStatus : function() {
-		$.get(Trippy.checker_endpoint, function(data) {
-			var msg = data["msg"];
-			if (msg === "not_ready") {
-				$("h2.article_status").append(".");
-			} else if(msg === "error"){
-			  clearInterval(window.job_checker)
-			  $("h2.article_status").empty().addClass("sad_article_status").append("Error! Please try again");
-			} else {
-				clearInterval(window.job_checker);
-				$("h2.article_status").empty();
-				var i;
-				for(i = 0; i < data["articles"]["articles"].length ; i++) {
-					$("#articles").append("<li>" +
-					 	"<h2>" + data["articles"]["articles"][i]["title"] + "<\/h2>" +
-						data["articles"]["articles"][i]["html"] + "<\/li>");
-				}
-				$("h2.article_status").append("In your " + data["articles"]["journey_length"] + " minute long journey " +
-					"you can read " + data["articles"]["articles"].length + " articles");
-			}
-		});
-		
-	},
-	stopJobChecker : function() {
-		clearInterval(window.job_checker);
-	}
-	
+  startJobChecker : function() {
+    Trippy.checker_endpoint = "/articles_ready/" + articles_hash;
+    window.job_checker = window.setInterval(Trippy.checkJobStatus,5000);
+  },
+  checkJobStatus : function() {
+    $.get(Trippy.checker_endpoint, function(data) {
+      var msg = data["msg"];
+      var payload = data["articles"]
+      console.log(data);
+      if (msg === "not_ready") {
+        $("h2.article_status").append(".");
+      } else if(msg === "error"){
+        clearInterval(window.job_checker)
+        $("h2.article_status").empty().addClass("sad_article_status").append("Error! Please try again");
+      } else {
+        clearInterval(window.job_checker);
+        $("h2.article_status").empty();
+        var i;
+        for(i = 0; i < payload["articles"].length ; i++) {
+          $("#articles").append("<li>" +
+            "<h2>" + payload["articles"][i]["title"] + "<\/h2>" +
+            payload["articles"][i]["html"] + "<\/li>");
+        }
+        $("h2.article_status").append("In your " + payload["journey_length"] + " minute long journey " +
+          "you can read " + payload["articles"].length + " articles (" + ((payload["read_time"] / payload["journey_length"]) * 100).toFixed(0) + "%)");
+      }
+    });
+    
+  },
+  stopJobChecker : function() {
+    clearInterval(window.job_checker);
+  }
+  
 }

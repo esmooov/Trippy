@@ -83,9 +83,9 @@ module Trippy
       urls.each do |url|
         article = url[:request].handled_response
         LOG.info "processing #{article.title}"
-        @read_time += article.read_time
         if acceptable_article?(article)
           LOG.info "accepting #{article.title} with read time: #{article.read_time}"
+          @read_time += article.read_time
           @articles << article
           @accepted_article_titles << article.title
         else
@@ -93,10 +93,10 @@ module Trippy
         end
       end
       LOG.info "total travel time is #{@journey_length / 60}"
-      LOG.info "total read time for this dump is #{@read_time}"
+      LOG.info "total read time for this dump is #{@read_time} (#{(@read_time.to_f) / (@journey_length / 60).to_f * 100})%"
       LOG.info "total articles is #{@articles.size}"
 
-      {:articles => @articles, :journey_length => (@journey_length / 60)}
+      {:articles => @articles, :journey_length => (@journey_length / 60), :read_time => @read_time}
     end
   end
     
