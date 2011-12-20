@@ -18,7 +18,7 @@ $(function(){
       $('#destination_field').attr("disabled", "disabled");
     }
   });
-  
+
   // Add previous answers if they exist
   store(function(storage){
     $('#destination_field').val(storage["trippy-destination"]);
@@ -33,7 +33,7 @@ $(function(){
       storage["trippy-twitter"]     = $('#twitter_name').val();
     });
   });
-  
+
   $('#gps').click(function(){
     navigator.geolocation.getCurrentPosition(
       function(pos){
@@ -78,10 +78,10 @@ var Trippy = {
 					"you can read " + data["articles"]["articles"].length + " articles");
 			}
 		});
-		
+
 	},
 	stopJobChecker : function() {
 		clearInterval(window.job_checker);
 	}
-	
+
 }
