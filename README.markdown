@@ -2,7 +2,7 @@
 
 An App to Give You *Just* Enough to Read on Your Commute.
 
-Use it: [http://trippyapp.com](http://trippyapp.com). [Read about it](http://www.shhhaw.com/2010/12/introducing-trippy-an-app-to-give-you-just-enough-to-read-on-your-commute.php) 
+Use it: [http://trippyapp.com](http://trippyapp.com). [Read about it](http://www.shhhaw.com/2010/12/introducing-trippy-an-app-to-give-you-just-enough-to-read-on-your-commute.php)
 
 Built at TimesOpen [hack day](http://www.nytimes.com/marketing/timesopen/hackday.html) 2010
 

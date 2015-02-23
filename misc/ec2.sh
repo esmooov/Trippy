@@ -22,7 +22,7 @@ apt-get -y install mysql-server
 apt-get -y install mysql-client
 apt-get -y install libmysql-ruby libmysqlclient-dev
 apt-get -y install sqlite3 libsqlite3-dev libsqlite3-ruby1.8 libdbd-sqlite3-ruby1.8
-apt-get -y install libssl-dev 
+apt-get -y install libssl-dev
 apt-get -y install libcurl4-openssl-dev
 apt-get -y install libxslt-dev libxml2-dev
 apt-get -y install zip unzip
